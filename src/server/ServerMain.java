@@ -1,5 +1,6 @@
+package server;
 
-public class main_client {
+public class ServerMain {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
