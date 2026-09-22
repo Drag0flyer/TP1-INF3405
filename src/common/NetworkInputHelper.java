@@ -52,7 +52,7 @@ public class NetworkInputHelper {
                 System.err.println("Erreur : vous devez entrer un nombre entier.");
                 scanner.nextLine(); // flush le buffer bloqué
             } catch (IllegalArgumentException e) {
-                System.err.printf("Erreur : le port doit être compris entre %d et %d.\n", min, max);
+                System.err.printf("Erreur : le port doit être compris entre %d et %d.%n", min, max);
             }
         }
     }
