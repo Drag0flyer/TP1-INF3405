@@ -17,11 +17,11 @@ public class ClientHandler implements Runnable {
 
 	@Override
 	public void run() {
-		Authentication();
+		authentication();
 		
 	}
 	
-	private void Authentication() {
+	private void authentication() {
 		try (Socket socket = this.clientSocket;
 			DataInputStream in = new DataInputStream(socket.getInputStream());
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
