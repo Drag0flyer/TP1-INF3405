@@ -5,19 +5,6 @@ import java.util.Scanner;
 /**
  * Validation des entrées du client et du serveur de clavardage.
  *
- * Cette classe regroupe NetworkInputHelper et la validation des messages,
- * des noms d'utilisateur et des mots de passe. Elle est organisée en trois
- * niveaux :
- *
- *   1. Les méthodes "getXxxError(...)" analysent une valeur et retournent un
- *      message d'erreur précis, ou null si la valeur est valide.
- *   2. Les méthodes "isValidXxx(...)" retournent simplement true/false.
- *      Elles peuvent être utilisées partout, y compris côté serveur pour
- *      vérifier une valeur reçue par le réseau.
- *   3. Les méthodes "readXxx(...)" lisent une valeur au clavier et
- *      redemandent la saisie, avec un message d'erreur précis, tant qu'elle
- *      est invalide.
- *
  * Toutes les méthodes sont static : on les appelle sur la classe,
  * par exemple InputValidator.isValidPort("5000").
  */
