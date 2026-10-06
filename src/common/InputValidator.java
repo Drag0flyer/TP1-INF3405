@@ -92,15 +92,15 @@ public final class InputValidator {
 	}
 
 	/** Règles partagées au nom d'utilisateur et au mot de passe. */
-	private static String getUserInfoError(String value, String fieldName) {
-		if (value == null || value.isEmpty()) {
-			return fieldName + " ne peut pas être vide.";
+	private static String getUserInfoError(String entry, String label) {
+		if (entry == null || entry.isEmpty()) {
+			return label + " ne peut pas être vide.";
 		}
-		if (!value.equals(value.trim())) {
-			return fieldName + " ne peut pas commencer ni se terminer par un espace.";
+		if (!entry.equals(entry.trim())) {
+			return label + " ne peut pas commencer ni se terminer par un espace.";
 		}
-		if (value.contains(FILE_SEPARATOR)) {
-			return fieldName + " ne peut pas contenir le caractère \""
+		if (entry.contains(FILE_SEPARATOR)) {
+			return label + " ne peut pas contenir le caractère \""
 					+ FILE_SEPARATOR + "\".";
 		}
 		return null;
