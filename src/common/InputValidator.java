@@ -21,18 +21,15 @@ public final class InputValidator {
 	private InputValidator() {
 	}
 
-	// =====================================================================
-	// 1. Analyse : retourne un message d'erreur précis, ou null si valide
-	// =====================================================================
+	
+	// 1. Message d'erreur précis, ou null si valide
 
-	/** Adresse IPv4 : 4 nombres de 0 à 255 séparés par des points. */
+	/** Adresse IP : 4 nombres de 0 à 255 séparés par des points. */
 	public static String getIpAddressError(String ipAddress) {
 		if (ipAddress == null || ipAddress.trim().isEmpty()) {
 			return "l'adresse IP ne peut pas être vide.";
 		}
 
-		// Le -1 conserve les morceaux vides : "192.168.1.1." donne 5 morceaux
-		// au lieu de 4, ce qui permet de refuser le point final.
 		String[] ipParts = ipAddress.trim().split("\\.", -1);
 		if (ipParts.length != 4) {
 			return "l'adresse IP doit comporter exactement 4 blocs séparés "
@@ -93,16 +90,15 @@ public final class InputValidator {
 		return getCredentialError(username, "le nom d'utilisateur");
 	}
 
-	/**
-	 * Mot de passe : mêmes règles que le nom d'utilisateur. Les espaces au
-	 * début et à la fin sont refusés parce que UserService les retire à la
-	 * relecture du fichier, ce qui empêcherait ensuite toute connexion.
+	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
+	 * Les espaces au début et à la fin sont refusés parce que UserService les retire à la relecture du fichier, 
+	 * ce qui empêcherait ensuite toute connexion.
 	 */
 	public static String getPasswordError(String password) {
 		return getCredentialError(password, "le mot de passe");
 	}
 
-	/** Règles communes au nom d'utilisateur et au mot de passe. */
+	/** Règles partagées au nom d'utilisateur et au mot de passe. */
 	private static String getCredentialError(String value, String fieldName) {
 		if (value == null || value.isEmpty()) {
 			return fieldName + " ne peut pas être vide.";
@@ -117,9 +113,8 @@ public final class InputValidator {
 		return null;
 	}
 
-	// =====================================================================
-	// 2. Tests simples : true si valide, false sinon
-	// =====================================================================
+
+	// 2. Tests : true si valide, false sinon
 
 	public static boolean isValidIpAddress(String ipAddress) {
 		return getIpAddressError(ipAddress) == null;
@@ -141,15 +136,10 @@ public final class InputValidator {
 		return getPasswordError(password) == null;
 	}
 
-	// =====================================================================
-	// 3. Saisie au clavier avec nouvelle demande tant que c'est invalide
-	// =====================================================================
-	// Le Scanner doit être créé une seule fois dans le main et réutilisé.
-	// Les erreurs sont affichées sur System.out (et non System.err) pour
-	// qu'elles apparaissent toujours dans le bon ordre par rapport aux
-	// questions dans la console d'Eclipse.
 
-	/** Retourne une adresse IP valide, sans espaces autour. */
+	// 3. Saisie au clavier 
+
+	/** Retourne une adresse IP valide, sans espaces. */
 	public static String readIpAddress(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
@@ -175,7 +165,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un nom d'utilisateur valide (les espaces autour sont retirés). */
+	/** Retourne un nom d'utilisateur valide sans espaces. */
 	public static String readUsername(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
