@@ -2,14 +2,14 @@ package common;
 
 import java.util.Scanner;
 
-// Validation des entrées du client et du serveur de clavardage.
+//// Validation des entrées du client et du serveur de clavardage. ////
 public final class InputValidator {
 
 	public static final int MIN_PORT = 5000;
 	public static final int MAX_PORT = 5050;
 	public static final int MAX_MESSAGE_LENGTH = 200;
 
-	// Séparateur utilisé dans le fichier users.txt.
+	// Séparateur pour le fichier users.txt.
 	public static final String FILE_SEPARATOR = ";";
 
 	private InputValidator() {
@@ -124,7 +124,7 @@ public final class InputValidator {
 	}
 
 
-	/// 3. Saisie au clavier ///
+	/// 3. Saisie clavier ///
 
 	// Retourne une adresse IP valide, sans espaces.
 	public static String readIpAddress(Scanner scanner, String prompt) {
