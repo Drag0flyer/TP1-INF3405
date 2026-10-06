@@ -16,7 +16,7 @@ public final class InputValidator {
 	}
 
 	
-	/// 1. Message d'erreur précis, ou null si valide
+	/// 1. Message d'erreur précis, ou null si valide ///
 
 	// Adresse IP : 4 nombres de 0 à 255 séparés par des points. 
 	public static String getIpAddressError(String ipAddress) {
@@ -101,7 +101,7 @@ public final class InputValidator {
 	}
 
 
-	// 2. Tests : true si valide, false sinon
+	/// 2. Tests : true si valide, false sinon ///
 
 	public static boolean isValidIpAddress(String ipAddress) {
 		return getIpAddressError(ipAddress) == null;
@@ -124,7 +124,7 @@ public final class InputValidator {
 	}
 
 
-	/// 3. Saisie au clavier 
+	/// 3. Saisie au clavier ///
 
 	// Retourne une adresse IP valide, sans espaces.
 	public static String readIpAddress(Scanner scanner, String prompt) {
