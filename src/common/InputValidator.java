@@ -81,18 +81,18 @@ public final class InputValidator {
 	 * le séparateur du fichier
 	 */
 	public static String getUsernameError(String username) {
-		return getCredentialError(username, "le nom d'utilisateur");
+		return getUserInfoError(username, "le nom d'utilisateur");
 	}
 
 	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
 	 * Les espaces au début et à la fin sont refusés
 	 */
 	public static String getPasswordError(String password) {
-		return getCredentialError(password, "le mot de passe");
+		return getUserInfoError(password, "le mot de passe");
 	}
 
 	/** Règles partagées au nom d'utilisateur et au mot de passe. */
-	private static String getCredentialError(String value, String fieldName) {
+	private static String getUserInfoError(String value, String fieldName) {
 		if (value == null || value.isEmpty()) {
 			return fieldName + " ne peut pas être vide.";
 		}
