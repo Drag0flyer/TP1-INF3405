@@ -2,23 +2,23 @@ package common;
 
 import java.util.Scanner;
 
-/** Validation des entrées du client et du serveur de clavardage. */
+// Validation des entrées du client et du serveur de clavardage.
 public final class InputValidator {
 
 	public static final int MIN_PORT = 5000;
 	public static final int MAX_PORT = 5050;
 	public static final int MAX_MESSAGE_LENGTH = 200;
 
-	/** Séparateur utilisé dans le fichier users.txt. */
+	// Séparateur utilisé dans le fichier users.txt.
 	public static final String FILE_SEPARATOR = ";";
 
 	private InputValidator() {
 	}
 
 	
-	// 1. Message d'erreur précis, ou null si valide
+	/// 1. Message d'erreur précis, ou null si valide
 
-	/** Adresse IP : 4 nombres de 0 à 255 séparés par des points. */
+	// Adresse IP : 4 nombres de 0 à 255 séparés par des points. 
 	public static String getIpAddressError(String ipAddress) {
 		if (ipAddress == null || ipAddress.trim().isEmpty()) {
 			return "L'adresse IP ne peut pas être vide.";
@@ -45,7 +45,7 @@ public final class InputValidator {
 		return null;
 	}
 
-	/** Port : nombre entier entre MIN_PORT et MAX_PORT inclusivement. */
+	// Port : nombre entier entre MIN_PORT et MAX_PORT inclusivement.
 	public static String getPortError(String portText) {
 		if (portText == null || portText.trim().isEmpty()) {
 			return "Le port ne peut pas être vide.";
@@ -63,7 +63,7 @@ public final class InputValidator {
 		return null;
 	}
 
-	/** Message de clavardage : non vide et au plus 200 caractères. */
+	// Message de clavardage : non vide et au plus 200 caractères.
 	public static String getMessageError(String message) {
 		if (message == null || message.isBlank()) {
 			return "Le message ne peut pas être vide.";
@@ -75,22 +75,17 @@ public final class InputValidator {
 		return null;
 	}
 
-	/**
-	 * Nom d'utilisateur : non vide, sans espace au début ni à la fin, et sans
-	 * le séparateur du fichier
-	 */
+	// Nom d'utilisateur : non vide, sans espace au début ni à la fin, et sans le séparateur du fichier
 	public static String getUsernameError(String username) {
 		return getUserInfoError(username, "Le nom d'utilisateur");
 	}
 
-	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
-	 * Les espaces au début et à la fin sont refusés
-	 */
+	// Mot de passe : mêmes règles que le nom d'utilisateur. Les espaces au début et à la fin sont refusés
 	public static String getPasswordError(String password) {
 		return getUserInfoError(password, "Le mot de passe");
 	}
 
-	/** Règles partagées au nom d'utilisateur et au mot de passe. */
+	// Règles partagées au nom d'utilisateur et au mot de passe.
 	private static String getUserInfoError(String entry, String label) {
 		if (entry == null || entry.isEmpty()) {
 			return label + " ne peut pas être vide.";
@@ -129,9 +124,9 @@ public final class InputValidator {
 	}
 
 
-	// 3. Saisie au clavier 
+	/// 3. Saisie au clavier 
 
-	/** Retourne une adresse IP valide, sans espaces. */
+	// Retourne une adresse IP valide, sans espaces.
 	public static String readIpAddress(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
@@ -144,7 +139,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un numéro de port valide. */
+	// Retourne un numéro de port valide.
 	public static int readPort(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
@@ -157,7 +152,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un nom d'utilisateur valide sans espaces. */
+	// Retourne un nom d'utilisateur valide sans espaces.
 	public static String readUsername(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
@@ -170,7 +165,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un mot de passe valide (pris tel quel, sans retirer d'espaces). */
+	// Retourne un mot de passe valide (pris tel quel, sans retirer d'espaces).
 	public static String readPassword(Scanner scanner, String prompt) {
 		while (true) {
 			System.out.print(prompt);
