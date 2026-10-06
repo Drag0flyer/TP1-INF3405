@@ -2,12 +2,7 @@ package common;
 
 import java.util.Scanner;
 
-/**
- * Validation des entrées du client et du serveur de clavardage.
- *
- * Toutes les méthodes sont static : on les appelle sur la classe,
- * par exemple InputValidator.isValidPort("5000").
- */
+/** Validation des entrées du client et du serveur de clavardage. */
 public final class InputValidator {
 
 	public static final int MIN_PORT = 5000;
@@ -83,16 +78,14 @@ public final class InputValidator {
 
 	/**
 	 * Nom d'utilisateur : non vide, sans espace au début ni à la fin, et sans
-	 * le séparateur du fichier users.txt (sinon la relecture du fichier
-	 * confondrait le nom et le mot de passe).
+	 * le séparateur du fichier
 	 */
 	public static String getUsernameError(String username) {
 		return getCredentialError(username, "le nom d'utilisateur");
 	}
 
 	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
-	 * Les espaces au début et à la fin sont refusés parce que UserService les retire à la relecture du fichier, 
-	 * ce qui empêcherait ensuite toute connexion.
+	 * Les espaces au début et à la fin sont refusés
 	 */
 	public static String getPasswordError(String password) {
 		return getCredentialError(password, "le mot de passe");
