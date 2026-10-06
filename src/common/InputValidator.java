@@ -22,24 +22,24 @@ public final class InputValidator {
 	/** Adresse IP : 4 nombres de 0 à 255 séparés par des points. */
 	public static String getIpAddressError(String ipAddress) {
 		if (ipAddress == null || ipAddress.trim().isEmpty()) {
-			return "l'adresse IP ne peut pas être vide.";
+			return "L'adresse IP ne peut pas être vide.";
 		}
 
 		String[] ipParts = ipAddress.trim().split("\\.", -1);
 		if (ipParts.length != 4) {
-			return "l'adresse IP doit comporter exactement 4 blocs séparés "
+			return "L'adresse IP doit avoir exactement 4 blocs séparés "
 					+ "par des points (ex. 192.168.1.25).";
 		}
 
 		for (String part : ipParts) {
 			// Uniquement 1 à 3 chiffres : refuse "", "abc", "+1", "-1", "1 2"
 			if (!part.matches("\\d{1,3}")) {
-				return "chaque partie de l'adresse IP doit être un nombre "
+				return "Chaque partie de l'adresse IP doit être un nombre "
 						+ "entier (reçu : \"" + part + "\").";
 			}
 			int value = Integer.parseInt(part);
 			if (value > 255) {
-				return "chaque partie de l'adresse IP doit être comprise "
+				return "Chaque partie de l'adresse IP doit être comprise "
 						+ "entre 0 et 255 (reçu : " + value + ").";
 			}
 		}
@@ -49,16 +49,16 @@ public final class InputValidator {
 	/** Port : nombre entier entre MIN_PORT et MAX_PORT inclusivement. */
 	public static String getPortError(String portText) {
 		if (portText == null || portText.trim().isEmpty()) {
-			return "le port ne peut pas être vide.";
+			return "Le port ne peut pas être vide.";
 		}
 		String trimmedPort = portText.trim();
 		// Au plus 5 chiffres : évite aussi un dépassement de la taille d'un int
 		if (!trimmedPort.matches("\\d{1,5}")) {
-			return "le port doit être un nombre entier (reçu : \"" + trimmedPort + "\").";
+			return "Le port doit être un nombre entier (reçu : \"" + trimmedPort + "\").";
 		}
 		int portNumber = Integer.parseInt(trimmedPort);
 		if (portNumber < MIN_PORT || portNumber > MAX_PORT) {
-			return "le port doit être compris entre " + MIN_PORT + " et "
+			return "Le port doit être compris entre " + MIN_PORT + " et "
 					+ MAX_PORT + " (reçu : " + portNumber + ").";
 		}
 		return null;
@@ -67,10 +67,10 @@ public final class InputValidator {
 	/** Message de clavardage : non vide et au plus 200 caractères. */
 	public static String getMessageError(String message) {
 		if (message == null || message.isBlank()) {
-			return "le message ne peut pas être vide.";
+			return "Le message ne peut pas être vide.";
 		}
 		if (message.length() > MAX_MESSAGE_LENGTH) {
-			return "le message ne peut pas dépasser " + MAX_MESSAGE_LENGTH
+			return "Le message ne peut pas dépasser " + MAX_MESSAGE_LENGTH
 					+ " caractères (longueur actuelle : " + message.length() + ").";
 		}
 		return null;
@@ -81,14 +81,14 @@ public final class InputValidator {
 	 * le séparateur du fichier
 	 */
 	public static String getUsernameError(String username) {
-		return getUserInfoError(username, "le nom d'utilisateur");
+		return getUserInfoError(username, "Le nom d'utilisateur");
 	}
 
 	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
 	 * Les espaces au début et à la fin sont refusés
 	 */
 	public static String getPasswordError(String password) {
-		return getUserInfoError(password, "le mot de passe");
+		return getUserInfoError(password, "Le mot de passe");
 	}
 
 	/** Règles partagées au nom d'utilisateur et au mot de passe. */
