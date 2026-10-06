@@ -26,7 +26,7 @@ public final class InputValidator {
 
 		String[] ipParts = ipAddress.trim().split("\\.", -1);
 		if (ipParts.length != 4) {
-			return "L'adresse IP doit avoir exactement 4 blocs séparés "
+			return "L'adresse IP doit comporter exactement 4 blocs séparés "
 					+ "par des points (ex. 192.168.1.25).";
 		}
 
