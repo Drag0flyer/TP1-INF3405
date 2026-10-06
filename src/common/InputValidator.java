@@ -9,10 +9,9 @@ public final class InputValidator {
 	public static final int MAX_PORT = 5050;
 	public static final int MAX_MESSAGE_LENGTH = 200;
 
-	/** Séparateur utilisé par UserService dans le fichier users.txt. */
+	/** Séparateur utilisé dans le fichier users.txt. */
 	public static final String FILE_SEPARATOR = ";";
 
-	/** Constructeur privé : cette classe ne sert jamais à créer des objets. */
 	private InputValidator() {
 	}
 
