@@ -31,7 +31,6 @@ public final class InputValidator {
 		}
 
 		for (String part : ipParts) {
-			// Uniquement 1 à 3 chiffres : refuse "", "abc", "+1", "-1", "1 2"
 			if (!part.matches("\\d{1,3}")) {
 				return "Chaque partie de l'adresse IP doit être un nombre "
 						+ "entier (reçu : \"" + part + "\").";
