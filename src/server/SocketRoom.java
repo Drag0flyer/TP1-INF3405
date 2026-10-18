@@ -8,11 +8,11 @@ import java.io.IOException;
 public class SocketRoom {
 	
 	private static class Client {
-		int clientId;
+		String username;
 		DataOutputStream out;
 		
-		public Client(int clientId, DataOutputStream out) {
-			this.clientId = clientId;
+		public Client(String username, DataOutputStream out) {
+			this.username = username;
 			this.out = out;
 		}
 	}
@@ -21,20 +21,20 @@ public class SocketRoom {
 	
 	public SocketRoom() {}
 	
-	public synchronized void addClient(int clientId, DataOutputStream out) {
-		clients.add(new Client(clientId, out));
+	public synchronized void addClient(String username, DataOutputStream out) {
+		clients.add(new Client(username, out));
 	}
 	
-	public synchronized void removeClient(int clientId) {
-		clients.removeIf(client -> client.clientId == clientId);
+	public synchronized void removeClient(String username) {
+		clients.removeIf(client -> client.username.equals(username));
 	}
 	
-	public synchronized void sendMessage(int clientId, String message) {
+	public synchronized void sendMessage(String username, String message) {
 		
 		for (Iterator<Client> i = clients.iterator(); i.hasNext();) {
 			
 			Client client = i.next();
-			if (client.clientId == clientId) continue;
+			if (client.username.equals(username)) continue;
 			
 			try {
 				client.out.writeUTF(message);

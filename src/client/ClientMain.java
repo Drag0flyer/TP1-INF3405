@@ -1,15 +1,17 @@
 package client;
 
 import java.util.Scanner;
-
 import common.AuthenticationCode;
 import common.InputValidator;
 import java.net.Socket;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientMain {
+	
+	private static final String QUIT_COMMAND = "/quit";
 	
 	private static final String[] authenticationMessages = {
 		"Connexion réussie",
@@ -17,6 +19,8 @@ public class ClientMain {
 		"Identifiants incorrects",
 		"Le serveur a rencontré un problème..."
 	};
+	
+	private static final AtomicBoolean wasClosedVoluntarily = new AtomicBoolean();
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
@@ -29,6 +33,7 @@ public class ClientMain {
 				DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 				DataInputStream in = new DataInputStream(socket.getInputStream())) {
 				
+				wasClosedVoluntarily.set(false);
 				String username, password;
 				
 				do {
@@ -52,13 +57,19 @@ public class ClientMain {
 				} while(true);
 				
 				// set up a seperate thread for messages coming from the server
-				ServerHandler serverHandler = new ServerHandler(in);
+				ServerHandler serverHandler = new ServerHandler(in, wasClosedVoluntarily);
 				Thread serverHandlerThread = new Thread(serverHandler);
 				serverHandlerThread.start();
 				
 				try {
 					while (!socket.isClosed()) {
-						out.writeUTF(InputValidator.readMessage(scanner, null));
+						String message = InputValidator.readMessage(scanner, null);
+						if (message.equals(QUIT_COMMAND)) {
+							wasClosedVoluntarily.set(true);
+							socket.close();
+							break;
+						}
+						out.writeUTF(message);
 						out.flush();
 					}
 				} catch(IOException e) { /*ServerHandler already informed the user about the disconnection*/ }

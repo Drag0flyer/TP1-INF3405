@@ -1,0 +1,84 @@
+Description de la solution
+
+
+Pour la partie serveur, je suis parti sur une approche avec des sockets bloquants TCP en multithreading :
+
+ServerMain : Le programme demande d'abord sur quel port écouter en limitant l'ecoute entre 5000 et 5050 grâce à InputValidator. Une fois le port est correct, un ServerSocket s'ouvre et attend les connexions avec .accept(). À chaque nouveau client, un nouveau thread est cree pour exécuter une instance de ClientHandler. La classe se charge aussi d'initialser une instance de SocketRoom.
+
+ClientHandler : Cette classe implémente Runnable et prend en charge toute la connexion. Elle débute par reçevoir le nom d'utilisateur et le mot de passe, valide ces derniers, puis renvoie au client le résultat de l'authentification. À la suite d'une authentification réussie, elle communique les 15 messages les plus récents au client, ajoute l'utilisateur à la salle de discussion, puis se met en écoute d'un message. Lorsque qu'elle reçoit un message de l'utilisateur, elle le valide, le formate, le sauvegarde et le partage au autres utilisateur de la salle de discussion. Lorsque la connection du socket est rompue, elle affiche un message au terminal en fonction de l'étape elle était rendue.
+
+UserService : Les identifiants sont sauvegardés dans un fichier texte : users.txt au format utilisateur;motdepasse. Les méthodes qui ecrivent sur ce fichier sont synchronisées avec synchronized pour éviter que plusieurs threads écrivent dedans en même temps.
+
+MessageService : Les messages sont sauvegardés avec leurs « header » dans un fichier taxte : messages.txt. Les méthodes de la classes permettent la lecture en parallèle avec ReadLock() et assurent l'exclusion mutuelle lors de l'écriture avec writeLock().
+
+SocketRoom : Permet d'ajouter et de retirer des utilisateurs d'un salle de discussion, ainsi que d'envoyer des messages à tous les autres utilisateurs de la salle. Le fait qu'il s'agisse d'un concept (classe) indépendant permetterais de facilement modifer l'application pour supporter plusieurs salles de discussion simultanés. Chaque méthode est « synchronized » pour permettre de partager la classe en toute sécurité entre plusieurs fils d'exécution.
+
+
+Pour la partie commune au client et serveur, il s'agissait surtout d'utilitaires au terminal et de standards de communication :
+
+InputValidator : Cette classe s'assure que l'adresse IP entrée respecte bien le format IPv4 (4 blocs valides sans zéros superflus au début, entre 0 et 255). Ellepermet aussi de vérifier l'intervalle du port du serveur (entre 5000 et 5050). Elle offre des méthodes pour confirmer la validité d'un nom d'utilisateur et d'un mot de passe (pas vide, pas trop long, pas d'espaces au début ni à la fin et pas de ';' qui pourrait confoncre avec le séparateur dans le fichier users.txt). Finalement, la classe offre aussi des méthodes fortes utiles pour afficher une requête sur le terminal, récupérer la réponse et de répéter l'opération tant qu'elle n'est pas valide.
+
+AuthenticationCode : Cette énumération encode les différentes réponses que le serveur peut envoyer au client lors de l'étape d'authentification.
+
+
+Pour la partie client, il s'agit aussi d'une approche de socket TCP bloquant sur deux threads :
+
+ClientMain : La classe débute par récupérer et valider l'adresse IP ainsi que le port du serveur auquel le client veut se connecter. Une fois la connection (socket) avec le serveur établie, elle demande, puis valide le nom d'utilisateur et le mot de passe du client. Elle s'occupe ensuite d'afficher le bon message à l'utilisateur en fonction du code d'authentification reçu. Après l'authentification, la classe démarre une instance de ServerHandler sur autre un thread et, puis attend une entrée sur le terminal. Lorsque l'utilisateur a terminé d'écrire son message, il est validé puis envoyé au serveur.
+
+ServerHandler : Cette classe attend continuellement dans une boucle de reçevoir un message de la part du serveur, pour ensuite l'afficher sur le terminal. Si la connexion avec le serveur est rompue, on affiche un message d'erreur dans le cas que l'utilisateur n'as pas tapé « /quit » dans le terminal.
+
+
+Les échanges entre la machine cliente et le serveur se font par DataInputStream et DataOutputStream :
+
+Pour la connexion et authentification :
+Le client transmet respectivement l'adresse IP et le port du serveur auquel il veut se connecter, son identifiant puis son mot de passe. Le serveur accepte la connection si l'adresse IP et le port étaient corrects. Si le compte est déjà en session ou si le mot de passe est incorrect, il renvoie le code d'erreur approprié. Si tout est correct ou si le compte vient d'être créé, il renvoie le code de « Connexion réussie ». Le serveur affiche dans son terminal que l'utilisateur a été connecté et envoie ensuite au client les 15 messages les plus récents.
+
+Pour la phase de conversation :
+Dès qu'un client connecté écrit quelque chose, le message est reçue par son ClientHandler, qui le vérifie, puis le diffuse à tout le monde via la méthode sendMessage().
+Le serveur reformate le message sous la forme : [pseudo - adressIP:port - AAAA-MM-JJ@HH:mm:ss] : texte.
+
+Pour la déconnexion :
+Si l'utilisateur tape /quit ou si le processus se termine (ce qui provoque une exception de socket), le serveur intercepte la fin de session et retire automatiquement le pseudo de la liste des clients actifs.
+Le serveur affiche que l'utilisateur à été déconnecté.
+Si le processus du serveur se termine (par force), les clients peuvent déterminer si la déconnexion (IOException lancé par « readUTF() ») était volontaire où non à l'aide d'un « AtomicBoolean ».
+Le client affiche un message d'erreur en cas de fin involontaire, puis revient à l'étape de connexion au serveur.
+
+
+
+
+Difficultés rencontrées
+
+
+
+Le probleme du suivi des connexions actives :
+Au départ, je pensais ajouter un booléen comme isConnected directement dans users.txt à côté des mots de passe. Mais je me suis vite rendu compte que si un client forçait l'arrêt ou plantait, le fichier gardait la valeur connecté, bloquant le compte. J'ai donc abandonné l'écriture sur disque pour l'état en direct et j'ai plutôt créé une map SynchronizedMap, ce qui permet de vider l'utilisateur automatiquement dès que le thread se termine. (ajout Fred) Du moins, c'était le cas, avant que j'aie réimplémenté à peut-près la même chose avec une ArrayList accessible via des méthodes « synchronized ». Une « SynchronizedMap » serait en effet beauoup plus approprié, surtout si le nombre d'utilisateur est très élevé.
+
+La structure et la lisibilité de ClientHandler :
+Au début, j'avais tout regroupé dans la méthode run(). Avec la gestion des erreurs réseau, les try/catch imbriqués et les conditions de validation, le code était devenu illisible et lourd à déboguer. J'ai donc pris du temps pour découper le traitement en trois classes très importantes : UserService pour l'accès et connexion et la sauvegarde des utilisateurs, MessageService pour la sauvegarde des messages puis SocketRoom pour la boucle de conversation.
+
+Probleme de diffusion des messages :
+Faire en sorte que le message d'un utilisateur soit réémis à tous les autres a été l'un des implementations les plus longs à mettre en place. Pour empêcher que deux threads tentent d'écrire en même temps sur le socket d'un même utilisateur, j'ai dû sécuriser l'envoi en déclarant la méthode sendMessage() en synchronized.
+
+Complexite de l'architecture:
+À force de découper au début, je me suis retrouvé avec trop de petites classes et d'interfaces qui compliquaient le projet pour rien. J'ai fini par en supprimer trois en fusionnant leur logique, ce qui a rendu le code serveur beaucoup plus simple.
+
+Condition de concurrence avec la sauvegarde des messages:
+Je voulais faire en sorte que les messages qui ont été sauvegardés côté serveur puissent être lus en parallèle par plusieurs threads. Or, il faut s'assurer qu'un seul thread aie accès à la ressource lorsqu'il sauvegarde un message. J'ai initialement tenté de faire un décompte des lecteurs avec des « AtomicInterger » et d'empêcher toute écritue lorsque le fichier est lu par un thread (et vis-versa). Finalement, j'ai fini par trouver les concepts de « Lock » en java, qui permettent de faire exactement cela. Avec toutes les manières de synchroniser des threads en java, ça fait beaucoup de documentation à lire.
+
+Problème de synchronisation des versions (Frédéric):
+Nous utilisons « git » comme outil de gestion de version. Des changements récents au niveau des mesures de sécurité on causés des problèmes avec la synchronisation via protocole https. Créer une nouvelle branche, changer de branche, effectuer une fusion et récupérer le travail de mes collègues était fastidieux. À un certain point, cela a même cessé de fonctionné et lorsque je voulais récupérer des modification faites par mes coéquipiers, « git » avait comme réponse « déjà à jour ». Je n'ai donc jamais vu la branche qui contenait la version finale du travail de Khobaib. Pensant initialement qu'il ne manquait que deux ou trois choses, je me suis éventuellement retrouvé à réimplémenter près de la moitié de son travail. Vous pouvez imaginer ma frustration en voyant, sur le site web de GitHub, l'état réel du projet lorsque je voulu changer l'utilisation du protocole https pour une clé SSH.
+
+
+
+Analyse critique et pistes d’amélioration
+
+
+
+Sécurité des mots de passe :
+Actuellement, les mots de passe sont enregistrés clairement dans le fichier texte et circulent sans protection sur le réseau. Pour un usage réel, il faudrait hacher les mots de passe avec un sel et sécuriser les échanges en chiffrant l'envoi de donnees entre client et serveur.
+
+Messages d'état de l'utilisateur du chat :
+Le serveur prévient déjà les autres quand un message texte est envoyé, mais il serait pratique d'ajouter des notifications système comme qui a rejoint, qui a quitte pour améliorer l'UX.
+
+Conflit d'affichage des messages dans le terminal:
+Le terminal fusionne le contenu des trois fichiers « in », « out » et « err ». Il y a donc un conflit lorsque l'utilisateur est es train d'écrire son message et que le programme reçoit un autre message provenant du serveur ou le programme lance une erreur. Le message que l'utilisateur était en train d'écrire se retrouve coupé en deux dans le terminal. On pourrait utiliser une interface graphique (« swing » par exemple) afin de rendre l'interaction avec l'application plus intuitive et cela nous permetterait aussi d'afficher un champ textuel indépendant du fil principal où l'utilisateur peut écrire son message.

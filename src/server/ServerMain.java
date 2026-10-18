@@ -10,7 +10,6 @@ import java.net.Inet4Address;
 public class ServerMain {
 
 	public static void main(String[] args) {
-		int idCounter = 0;
 		SocketRoom room = new SocketRoom();
 		Scanner scanner = new Scanner(System.in);
 		
@@ -28,7 +27,7 @@ public class ServerMain {
 					System.out.println("Nouveau client connecté : " + clientSocket.getInetAddress());
 					
 					// Gives the client to a new thread as to not block the others.
-					ClientHandler clientHandler = new ClientHandler(idCounter++, room, clientSocket);
+					ClientHandler clientHandler = new ClientHandler(room, clientSocket);
 					Thread clientThread = new Thread(clientHandler);
 					clientThread.start();
 				}

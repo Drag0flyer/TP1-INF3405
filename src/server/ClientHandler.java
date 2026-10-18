@@ -4,17 +4,19 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Calendar;
 import common.AuthenticationCode;
 import common.InputValidator;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 public class ClientHandler implements Runnable {
-	private final int clientId;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd@HH:mm:ss");
+	
 	private final SocketRoom room;
 	private final Socket clientSocket;
 
-	public ClientHandler(int clientId, SocketRoom room, Socket clientsocket) {
-		this.clientId = clientId;
+	public ClientHandler(SocketRoom room, Socket clientsocket) {
 		this.room = room;
 		this.clientSocket = clientsocket;
 	}
@@ -37,14 +39,19 @@ public class ClientHandler implements Runnable {
 					return;
 				}
 				
-				AuthenticationCode code = UserService.authenticate(username, password);
+				AuthenticationCode code;
+				if (!InputValidator.isValidUsername(username) || !InputValidator.isValidPassword(password)) {
+					code = AuthenticationCode.INVALID_CREDENTIALS;
+				} else {
+					code = UserService.authenticate(username, password);					
+				}
 				
 				try {
 					out.writeInt(code.ordinal());
 					out.flush();
 				} catch (IOException e) {
 					System.out.println("Déconnexion d'un utilisateur encore non-authentifié");
-					UserService.disconnectUser(username);
+					UserService.disconnectUser(username); // The authentication could have been valid. Don't take chances.
 					return;
 				}
 				
@@ -67,7 +74,7 @@ public class ClientHandler implements Runnable {
 				}
 				
 				// Let the users converse together in a room.
-				room.addClient(clientId, out);
+				room.addClient(username, out);
 				
 				String clientIpAddress = socket.getRemoteSocketAddress().toString();
 				String message;
@@ -75,15 +82,15 @@ public class ClientHandler implements Runnable {
 				while(true) {
 					message = in.readUTF();
 					if (InputValidator.isValidMessage(message)) {
-						message = formatMessageHeader(username, clientIpAddress, Calendar.getInstance()).append(message).toString();
-						room.sendMessage(clientId, message);
+						message = formatMessage(username, clientIpAddress, message);
 						MessageService.saveMessage(message);
+						room.sendMessage(username, message);
 					}
 				}
 			}
 			catch(IOException e) { System.out.println("L'utilisateur " + username + " s'est déconnecté"); }
 			
-			room.removeClient(clientId);
+			room.removeClient(username);
 			UserService.disconnectUser(username);
 
 		} catch (IOException e) {
@@ -91,31 +98,8 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
-	private StringBuffer formatMessageHeader(String username, String clientIpAddress, Calendar currentTime) {
-		int year = currentTime.get(Calendar.YEAR);
-		int month = currentTime.get(Calendar.MONTH);
-		int day = currentTime.get(Calendar.DAY_OF_MONTH);
-		int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-		int minute = currentTime.get(Calendar.MINUTE);
-		int second = currentTime.get(Calendar.SECOND);
-		StringBuffer header = new StringBuffer(100);
-		header.append('[');
-		header.append(username);
-		header.append(" - ");
-		header.append(clientIpAddress);
-		header.append(" - ");
-		header.append(year);
-		header.append('-');
-		header.append(month);
-		header.append('-');
-		header.append(day);
-		header.append('@');
-		header.append(hour);
-		header.append(':');
-		header.append(minute);
-		header.append(':');
-		header.append(second);
-		header.append("] : ");
-		return header;
+	private static String formatMessage(String username, String clientIpAddress, String message) {
+		String timestamp = ZonedDateTime.now().format(FORMATTER);
+		return String.format("[%s - %s - %s] : %s", username, clientIpAddress, timestamp, message);
 	}
 }
