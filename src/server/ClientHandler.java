@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Calendar;
 import common.AuthenticationCode;
+import common.InputValidator;
 
 public class ClientHandler implements Runnable {
 	private final int clientId;
@@ -73,9 +74,11 @@ public class ClientHandler implements Runnable {
 				
 				while(true) {
 					message = in.readUTF();
-					message = formatMessageHeader(username, clientIpAddress, Calendar.getInstance()).append(message).toString();
-					room.sendMessage(clientId, message);
-					MessageService.saveMessage(message);
+					if (InputValidator.isValidMessage(message)) {
+						message = formatMessageHeader(username, clientIpAddress, Calendar.getInstance()).append(message).toString();
+						room.sendMessage(clientId, message);
+						MessageService.saveMessage(message);
+					}
 				}
 			}
 			catch(IOException e) { System.out.println("L'utilisateur " + username + " s'est déconnecté"); }

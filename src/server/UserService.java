@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import common.AuthenticationCode;
 import java.util.ArrayList;
+import common.InputValidator;
 
 public class UserService {
 
@@ -58,6 +59,10 @@ public class UserService {
 	}
 
 	private static AuthenticationCode addUser(String username, String password) {
+		if (!InputValidator.isValidUsername(username) || !InputValidator.isValidPassword(password)) {
+			return AuthenticationCode.INVALID_CREDENTIALS;
+		}
+		
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
 			writer.write(username + ";" + password);
 			writer.newLine();
