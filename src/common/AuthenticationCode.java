@@ -1,0 +1,8 @@
+package common;
+
+public enum AuthenticationCode {
+	SUCCESSFUL_AUTHENTICATION,
+	USER_ALREADY_CONNECTED,
+	INVALID_CREDENTIALS,
+	SERVER_ERROR
+}
