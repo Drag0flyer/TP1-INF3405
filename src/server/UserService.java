@@ -53,7 +53,7 @@ public class UserService {
 		return AuthenticationCode.SERVER_ERROR;
 	}
 	
-	public static void disconnectUser(String username) {
+	public static synchronized void disconnectUser(String username) {
 		connectedUsers.remove(username);
 	}
 
