@@ -2,24 +2,23 @@ package common;
 
 import java.util.Scanner;
 
-/** Validation des entrées du client et du serveur de clavardage. */
+// Validation des entrées : client et serveur
 public final class InputValidator {
 
 	public static final int MIN_PORT = 5000;
 	public static final int MAX_PORT = 5050;
 	public static final int MAX_MESSAGE_LENGTH = 200;
 
-	/** Séparateur utilisé par UserService dans le fichier users.txt. */
+	// Séparateur
 	public static final String FILE_SEPARATOR = ";";
 
-	/** Constructeur privé : cette classe ne sert jamais à créer des objets. */
 	private InputValidator() {
 	}
 
 	
-	// 1. Message d'erreur précis, ou null si valide
+/// 1. Message d'erreur
 
-	/** Adresse IP : 4 nombres de 0 à 255 séparés par des points. */
+	// Adresse IP
 	public static String getIpAddressError(String ipAddress) {
 		if (ipAddress == null || ipAddress.trim().isEmpty()) {
 			return "L'adresse IP ne peut pas être vide.";
@@ -32,7 +31,6 @@ public final class InputValidator {
 		}
 
 		for (String part : ipParts) {
-			// Uniquement 1 à 3 chiffres : refuse "", "abc", "+1", "-1", "1 2"
 			if (!part.matches("\\d{1,3}")) {
 				return "Chaque partie de l'adresse IP doit être un nombre "
 						+ "entier (reçu : \"" + part + "\").";
@@ -46,13 +44,13 @@ public final class InputValidator {
 		return null;
 	}
 
-	/** Port : nombre entier entre MIN_PORT et MAX_PORT inclusivement. */
+	// Port
 	public static String getPortError(String portText) {
 		if (portText == null || portText.trim().isEmpty()) {
 			return "Le port ne peut pas être vide.";
 		}
 		String trimmedPort = portText.trim();
-		// Au plus 5 chiffres : évite aussi un dépassement de la taille d'un int
+	
 		if (!trimmedPort.matches("\\d{1,5}")) {
 			return "Le port doit être un nombre entier (reçu : \"" + trimmedPort + "\").";
 		}
@@ -64,7 +62,7 @@ public final class InputValidator {
 		return null;
 	}
 
-	/** Message de clavardage : non vide et au plus 200 caractères. */
+	// Message 
 	public static String getMessageError(String message) {
 		if (message == null || message.isBlank()) {
 			return "Le message ne peut pas être vide.";
@@ -76,22 +74,17 @@ public final class InputValidator {
 		return null;
 	}
 
-	/**
-	 * Nom d'utilisateur : non vide, sans espace au début ni à la fin, et sans
-	 * le séparateur du fichier
-	 */
+	// Nom d'utilisateur
 	public static String getUsernameError(String username) {
 		return getUserInfoError(username, "Le nom d'utilisateur");
 	}
 
-	/** Mot de passe : mêmes règles que le nom d'utilisateur. 
-	 * Les espaces au début et à la fin sont refusés
-	 */
+	// Mot de passe
 	public static String getPasswordError(String password) {
 		return getUserInfoError(password, "Le mot de passe");
 	}
 
-	/** Règles partagées au nom d'utilisateur et au mot de passe. */
+	// Règles partagées
 	private static String getUserInfoError(String entry, String label) {
 		if (entry == null || entry.isEmpty()) {
 			return label + " ne peut pas être vide.";
@@ -107,7 +100,7 @@ public final class InputValidator {
 	}
 
 
-	// 2. Tests : true si valide, false sinon
+/// 2. Tests
 
 	public static boolean isValidIpAddress(String ipAddress) {
 		return getIpAddressError(ipAddress) == null;
@@ -130,9 +123,9 @@ public final class InputValidator {
 	}
 
 
-	// 3. Saisie au clavier 
+/// 3. Saisie
 
-	/** Retourne une adresse IP valide, sans espaces. */
+	// Adresse IP
 	public static String readIpAddress(Scanner scanner, String prompt) {
 		while (true) {
 			if (prompt != null) { System.out.println(prompt); }
@@ -145,7 +138,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un numéro de port valide. */
+	// Port
 	public static int readPort(Scanner scanner, String prompt) {
 		while (true) {
 			if (prompt != null) { System.out.println(prompt); }
@@ -158,7 +151,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un nom d'utilisateur valide sans espaces. */
+	// Nom d'utilisateur
 	public static String readUsername(Scanner scanner, String prompt) {
 		while (true) {
 			if (prompt != null) { System.out.println(prompt); }
@@ -171,7 +164,7 @@ public final class InputValidator {
 		}
 	}
 
-	/** Retourne un mot de passe valide (pris tel quel, sans retirer d'espaces). */
+	// Mot de passe
 	public static String readPassword(Scanner scanner, String prompt) {
 		while (true) {
 			if (prompt != null) { System.out.println(prompt); }
@@ -184,6 +177,7 @@ public final class InputValidator {
 		}
 	}
 	
+	// Message
 	public static String readMessage(Scanner scanner, String prompt) {
 		while(true) {
 			if (prompt != null) { System.out.println(prompt); }
